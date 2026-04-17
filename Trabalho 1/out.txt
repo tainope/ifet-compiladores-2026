@@ -1,0 +1,108 @@
+JFlex
+Reading "microjava.flex"
+
+Warning: Macro "Sym_OpenCommentBlock" has been declared but never used.
+
+Warning: Macro "number" has been declared but never used.
+
+Warning: Macro "KW_Print" has been declared but never used.
+
+Warning: Macro "Sym_CloseComentBlock" has been declared but never used.
+
+Warning: Macro "KW_Read" has been declared but never used.
+
+Warning in file "microjava.flex" (line 87): 
+Expression matches the empty string, which may lead to non-termination.
+{Integer} { System.out.println("("+ yyline + ", " + yycolumn + ", " + "Integer): " + yytext()); }
+
+Warning in file "microjava.flex" (line 88): 
+Expression matches the empty string, which may lead to non-termination.
+{Float} { System.out.println("("+ yyline + ", " + yycolumn + ", " + "Float): " + yytext()); }
+Constructing NFA : 200 states in NFA
+Converting NFA to DFA : 
+......................................................................................
+
+Warning in file "microjava.flex" (line 92): 
+Rule can never be matched:
+{letter} { System.out.println("("+ yyline + ", " + yycolumn + ", " + "letter): " + yytext()); }
+
+Warning in file "microjava.flex" (line 93): 
+Rule can never be matched:
+{digit} { System.out.println("("+ yyline + ", " + yycolumn + ", " + "digit): " + yytext()); }
+88 states before minimization, 72 states in minimized DFA
+Writing code to "Yylex.java"
+Compile
+Run
+(0, 0, KW_Program): program
+(0, 8, ident): P
+(2, 0, KW_class): class
+(2, 6, ident): Teste
+(2, 12, Sym_OpenCurlyBrac): {
+(3, 2, KW_Int): int
+(3, 6, ident): v1
+(3, 8, Sym_Semicolon): ;
+(4, 2, KW_Float): float
+(4, 8, ident): v2
+(4, 10, Sym_Semicolon): ;
+(5, 0, Sym_ClosedCurlyBrac): }
+(7, 0, Comment): /* este é um comentário
+   de várias linhas */
+(11, 0, Sym_OpenCurlyBrac): {
+(13, 2, KW_Void): void
+(13, 7, KW_Main): main
+(13, 11, Sym_OpenPar): (
+(13, 12, Sym_ClosedBPar): )
+(14, 2, Sym_OpenCurlyBrac): {
+(15, 4, ident): Teste
+(15, 10, ident): t
+(15, 12, Sym_Attrib): =
+(15, 14, KW_New): new
+(15, 18, ident): Teste
+(15, 23, Sym_Semicolon): ;
+(16, 4, ident): t
+(16, 5, Sym_Period): .
+(16, 6, ident): v1
+(16, 9, Sym_Attrib): =
+(16, 11, Integer): 123
+(16, 14, Sym_Semicolon): ;
+(17, 4, ident): t
+(17, 5, Sym_Period): .
+(17, 6, ident): v2
+(17, 9, Sym_Attrib): =
+(17, 11, Float): 4.56
+(17, 15, Sym_Semicolon): ;
+(18, 4, ident): print
+(18, 9, Sym_OpenPar): (
+(18, 10, ident): t
+(18, 11, Sym_Period): .
+(18, 12, ident): v1
+(18, 14, Sym_Comma): ,
+(18, 16, Integer): 5
+(18, 17, Sym_ClosedBPar): )
+(18, 18, Sym_Semicolon): ;
+(19, 4, ident): print
+(19, 9, Sym_OpenPar): (
+(19, 10, ident): t
+(19, 11, Sym_Period): .
+(19, 12, ident): v2
+(19, 14, Sym_Comma): ,
+(19, 16, Hexadecimal): 0x10
+(19, 20, Sym_ClosedBPar): )
+(19, 21, Sym_Semicolon): ;
+(20, 2, Sym_ClosedCurlyBrac): }
+(22, 0, Sym_ClosedCurlyBrac): }
+(24, 0, Integer): 10
+(25, 0, Float): 10.0
+(26, 0, Hexadecimal): 0xABCdef12345
+(28, 0, Mulop): /
+(28, 1, Mulop): *
+(28, 3, ident): teste
+(28, 9, Mulop): /
+(28, 10, Mulop): *
+(28, 11, ident): comentatio
+(28, 22, ident): aninhado
+(28, 30, Mulop): *
+(28, 31, Mulop): /
+(28, 33, Mulop): *
+(28, 34, Mulop): /
+(30, 0, Comment): // comentario linha unica
