@@ -7,7 +7,7 @@
 
 Sym_OpenCommentBlock = "/*"
 Sym_CloseComentBlock = "*/"
-Comment     = ("/*" (. [^"*/"])* "*/") | ("//" (.)*)
+Comment     = ("/*" (. [^"*/"] | [^"*"])* "*/") | ("//" (.)*)
 
 KW_Program  = "program"
 KW_Class    = "class"
@@ -39,7 +39,7 @@ Sym_Whitespace   = (" " | "\n" | "\t" | "\r")
 
 
 Integer = {digit}*
-Float = {Integer} ("." {Integer})?
+Float = {Integer} ("." {Integer})? ("e" ("+" | "-")? {Integer})
 Hexadecimal = "0x" ({Integer} | [A-Fa-f])*
 
 number      = ({Integer} | {Float} | {Hexadecimal})
@@ -49,7 +49,7 @@ digit       = [0-9]
 Addop       = ("+" | "-")
 Mulop       = ("*" | "/" | "%")
 Relop       = ("==" | "!=" | ">" | ">=" | "<" | "<=")
-//Comment     = ("/*" (. -- ("*/"))* "*/" | "//" .*)
+
 
 
 

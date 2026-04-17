@@ -25,7 +25,15 @@ class Teste {
 10
 10.0
 0xABCdef12345
+3.78e+56
+3.78e-56
+3.78e56
+3e56
 
 /* teste /*comentatio aninhado*/ */
 
 // comentario linha unica
+
+/* este é um comentário
+   de várias * linhas */
+
