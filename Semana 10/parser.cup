@@ -1,0 +1,182 @@
+import java_cup.runtime.*;
+
+/* TERMINAIS */
+terminal PTVIRG, VIRG, PTO, MAIS, MENOS, DIV, MULT, MOD, IGUAL;
+terminal ABRE_PARENT, FECHA_PARENT, ABRE_CHAVE, FECHA_CHAVE, ABRE_COLCH, FECHA_COLCH;
+terminal KW_PROGRAM, KW_IF, KW_ELSE, KW_WHILE;
+terminal String OP_RELACIONAL;
+terminal Double NUMBER;
+terminal IDENT;
+
+/* NÃO TERMINAIS */
+non terminal Double[] expr_list;
+non terminal Double expr_ptv, expr, term, factor, designator;
+non terminal type, varDecl_op, varDecl, varDecl_aux;
+non terminal statement, statement_aux, program;
+non terminal if, else, condicao;
+
+
+program ::= 
+    KW_PROGRAM IDENT
+    varDecl_aux
+    ABRE_CHAVE 
+    statement_aux
+    FECHA_CHAVE
+;
+
+
+statement_aux ::=
+    statement_aux statement
+    | statement
+;
+
+
+statement ::= 
+    expr_ptv
+    | designator IGUAL expr:e PTVIRG  
+        {: System.out.println("Atribuicao reconhecida: " + e); :}
+    | if else
+;
+
+
+type ::= 
+    IDENT ABRE_COLCH FECHA_COLCH         
+    | IDENT
+;
+
+
+varDecl_aux ::=
+    varDecl varDecl_aux
+    | /* vazio */
+;
+
+
+varDecl ::= type IDENT:id 
+    {: System.out.print("Declaracao variavel:"+id);:} 
+    varDecl_op PTVIRG
+    {: System.out.println("");:} //so para dar uma quebra de linha
+;
+
+
+varDecl_op ::= 
+    varDecl_op VIRG IDENT:id
+    {: System.out.print(", "+id);:} 
+    | /* vazio */ 
+;
+
+
+if ::= 
+    {: int i = 0; :}
+    {: System.out.print("if(");:}
+    KW_IF ABRE_PARENT condicao FECHA_PARENT 
+    ABRE_CHAVE {: System.out.println("){"); :}
+    expr_list:expr
+    {: System.out.println("Somatorio: " + expr[0] + ";\nTotalExpressoes: " + expr[1] + ";"); :}
+    FECHA_CHAVE{: System.out.println("}"); :}
+;
+
+
+else ::= {: System.out.println("else{");:}
+    KW_ELSE ABRE_CHAVE 
+    expr_list
+    FECHA_CHAVE  {: System.out.println("}");:}
+    | /* vazio */ 
+;
+
+
+condicao ::= 
+    expr:e1 OP_RELACIONAL:op expr:e2
+        {: 
+            boolean resultado = false;
+            //como op é uma string (>, <, >=, <=, != ou ==) vamos verificar e fazer a devida comparacao
+            switch (op){
+                case "<":
+                    resultado = (e1 < e2);
+                    break;
+                case "<=":
+                    resultado = (e1 <= e2);						
+                    break;
+                case ">":
+                    resultado = (e1 > e2);						
+                    break;
+                case ">=":
+                    resultado = (e1 >= e2);						
+                    break;
+                case "==":
+                    resultado = (e1 == e2);						
+                    break;
+                case "!=":
+                    resultado = (e1 != e2);						
+                    break;
+                default:
+                    System.out.println("*Simbolo desconhecido");
+            }
+            System.out.print(resultado);  
+        :}
+;
+
+
+expr_list ::=
+    expr_list:el expr_ptv:ep
+        {: 
+            Double[] tmp = new Double[2];
+            tmp[0] = el[0] + ep;
+            tmp[1] = el[1] + 1.0;
+            RESULT = tmp; 
+        :}
+    | expr_ptv:ep
+        {:
+            Double[] tmp = new Double[2];
+            tmp[0] = ep;
+            tmp[1] = 1.0;
+            RESULT = tmp; 
+        :}
+;
+
+
+expr_ptv ::= 
+    expr:e {: /*System.out.println("= " + e); */ :} PTVIRG
+    {: RESULT = e; :}
+;
+
+
+expr  ::=  
+    expr:e MAIS term:t
+        {:	RESULT = e + t; :}
+    | expr:e MENOS term:t
+        {:	RESULT = e - t; :}      
+    | MENOS term:t
+        {:	RESULT = -t; :}				
+    | term:t
+        {:	RESULT = t.doubleValue(); :}
+;
+
+
+term   ::= 
+    factor:f MULT term:t
+        {: RESULT = f * t; :}				 
+    | factor:f DIV term:t
+        {: RESULT = f / t;  :}
+    | factor:f
+        {: RESULT = f.doubleValue(); :}
+;
+
+
+factor  ::=  
+    NUMBER:n 
+        {: RESULT = n.doubleValue(); :}
+    | ABRE_PARENT expr:e FECHA_PARENT
+        {: RESULT = e.doubleValue(); :}
+    | designator:d
+        {: RESULT = d.doubleValue(); :}
+;
+
+
+designator ::= 
+    designator ABRE_COLCH expr FECHA_COLCH 				
+        {:	RESULT = Double.valueOf(1.0); :}
+    | designator PTO IDENT	
+        {:	RESULT = Double.valueOf(1.0); :}			
+    | IDENT
+        {:	RESULT = Double.valueOf(1.0); :}
+;
