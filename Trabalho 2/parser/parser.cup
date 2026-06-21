@@ -1,0 +1,279 @@
+package parser;
+import java_cup.runtime.*;
+//import erros.ListaErros;
+
+/* CODIGO ADICIONAL */
+parser code
+{:  
+    public void syntax_error(Symbol s){
+        this.defineErro(s.left, s.right);
+        System.out.println("->ERROR FOUND!");
+    }
+
+    public void defineErro(int linha, int coluna, String texto)
+	{   
+        scanner.Scanner sc = (scanner.Scanner) this.getScanner();  
+        sc.defineErro(linha, coluna, texto);
+	}
+
+    public void defineErro(int linha, int coluna)
+	{   
+        scanner.Scanner sc = (scanner.Scanner) this.getScanner();  
+        sc.defineErro(linha, coluna);
+	}
+
+    public void defineErro(String texto)
+	{   
+        scanner.Scanner sc = (scanner.Scanner) this.getScanner();  
+        sc.defineErro(texto);
+	}
+:};
+
+terminal String IDENT;
+terminal Integer INTEIRO;
+terminal Float FLOAT;
+terminal char CHAR;
+
+terminal KW_PROGRAM, KW_CLASS, KW_IF, KW_ELSE, KW_WHILE, KW_READ, KW_PRINT, KW_RETURN, KW_VOID, KW_FINAL, KW_NEW;
+terminal ABREPAR, FECHAPAR, ABRECHAVE, FECHACHAVE, ABRECOL, FECHACOL, PTVIRG, PTO, VIRG;
+terminal MAIS, MENOS, VEZES, DIV, MOD, IGUALIGUAL, DIF, MAIOR, MENOR, MAIORIGUAL, MENORIGUAL, IGUAL;
+
+non terminal Program, Identifier, Program_aux, ConstDecl, Number, Type;
+non terminal VarDecl, ClassDecl, MethodDecl;
+non terminal VarDecl_op, VarDecl_aux, FormPars, FormPars_op, Block, Statement, Statement_aux;
+non terminal Conditional, Number_virg, ActPars, ActPars_aux, Condition, Relop;
+non terminal Expr, Expr_aux, Term, Term_aux, Factor, Designator, Addop, Mulop;
+
+non terminal Conditional_err, MethodCall, Designator_aux, Attrib, Attrib_aux, Return, Return_aux, Read, Print, While;
+
+Program ::= 
+    KW_PROGRAM Identifier
+    Program_aux
+    ABRECHAVE
+    MethodDecl
+    FECHACHAVE
+;
+
+
+Identifier ::= IDENT;
+
+Number ::= INTEIRO | FLOAT;
+
+Type ::=
+    Identifier ABRECOL FECHACOL
+    | Identifier
+;
+
+VarDecl ::=
+    Type Identifier VarDecl_op PTVIRG
+    | error:e PTVIRG
+;
+
+VarDecl_op ::=
+    VIRG Identifier VarDecl_op
+    |
+;
+
+VarDecl_aux ::=
+    VarDecl_aux VarDecl
+    |
+;
+
+ConstDecl ::= KW_FINAL VarDecl;
+
+ClassDecl ::=
+    KW_CLASS Identifier ABRECHAVE
+    VarDecl_aux
+    FECHACHAVE
+;
+
+Program_aux ::=
+    Program_aux ConstDecl
+    | Program_aux VarDecl
+    | Program_aux ClassDecl
+    |
+;
+
+FormPars ::=
+    Type Identifier
+    | FormPars VIRG Type Identifier
+;
+
+FormPars_op ::=
+    FormPars
+    |
+;
+
+MethodCall ::= 
+    Designator ActPars PTVIRG
+;
+
+Attrib ::=
+    Identifier Attrib_aux PTVIRG
+;
+
+Attrib_aux ::=
+    IGUAL Expr
+    |
+;
+
+/* Return ::=
+    KW_RETURN Return_aux
+;
+
+Return_aux ::=
+    Expr PTVIRG
+    | PTVIRG
+    | {: parser.defineErro(eleft, eright, "Return sem ';'"); :}
+; */
+
+Return ::=
+    KW_RETURN Return_aux 
+;
+
+Return_aux ::=
+    Expr PTVIRG
+    | PTVIRG
+;
+
+While ::=
+    KW_WHILE ABREPAR Condition FECHAPAR Statement
+    | error ABREPAR FECHAPAR
+;
+
+Statement ::=
+    MethodCall
+    | VarDecl
+    | Attrib
+    | Conditional
+    | While
+    | Return
+    | KW_READ ABREPAR Designator FECHAPAR PTVIRG
+    | KW_PRINT ABREPAR Expr Number_virg FECHAPAR PTVIRG
+    | Block
+    | error
+;
+
+/* Conditional_err ::=
+    KW_IF Condition 
+        ABRECHAVE
+            Statement
+        FECHACHAVE
+; */
+
+Statement_aux ::=
+    Statement_aux Statement
+    |
+;
+
+Conditional ::=
+    KW_IF ABREPAR Condition FECHAPAR
+        ABRECHAVE
+            Statement
+        FECHACHAVE
+    | KW_IF ABREPAR Condition FECHAPAR
+        ABRECHAVE
+            Statement
+        FECHACHAVE
+        KW_ELSE
+        ABRECHAVE
+            Statement
+        FECHACHAVE
+    |KW_IF Condition:c
+        ABRECHAVE
+            Statement
+        FECHACHAVE
+        {: parser.defineErro(cleft, cright, "IF Sem parenteses."); :}
+    | KW_IF Condition:c 
+        ABRECHAVE
+            Statement
+        FECHACHAVE
+        KW_ELSE
+        ABRECHAVE
+            Statement
+        FECHACHAVE
+        {: parser.defineErro(cleft, cright, "IF Sem parenteses."); :}
+;
+
+Number_virg ::=
+    VIRG INTEIRO
+    |
+;
+
+ActPars ::=
+    ABREPAR FECHAPAR
+    | ABREPAR ActPars_aux FECHAPAR
+;
+
+ActPars_aux ::=
+    ActPars_aux VIRG Expr
+    | Expr
+;
+
+Condition ::=
+    Expr Relop Expr
+    | error Relop
+;
+
+Relop ::=
+    IGUALIGUAL
+    | DIF
+    | MAIOR
+    | MAIORIGUAL
+    | MENOR
+    | MENORIGUAL
+;
+
+Expr ::=
+    Term Expr_aux
+;
+
+Expr_aux ::=
+    Addop Term Expr_aux
+    | 
+;
+
+Term ::=
+    Factor Term_aux
+;
+
+Term_aux ::=
+    Mulop Factor Term_aux
+    | 
+;
+
+Factor ::=
+    Designator
+    | Designator ActPars
+    | INTEIRO
+    | FLOAT
+    | KW_NEW Identifier ABRECOL Expr FECHACOL
+    | KW_NEW Identifier
+    | ABREPAR Expr FECHAPAR
+;
+
+Designator_aux ::=
+    PTO Identifier Designator_aux
+    | ABRECOL Expr FECHACOL Designator_aux
+    |
+;
+
+Designator ::=
+    Identifier Designator_aux
+;
+
+Addop ::= MAIS | MENOS;
+
+Mulop ::= VEZES | DIV | MOD;
+
+Block ::=
+    ABRECHAVE
+    Statement_aux
+    FECHACHAVE
+;
+
+
+MethodDecl ::= 
+    MethodDecl Type Identifier ABREPAR FormPars_op FECHAPAR VarDecl_aux Block
+    |
+;
